@@ -1,0 +1,24 @@
+# Compiled artifacts
+/ray_casting/mp
+/build/
+**/build/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
