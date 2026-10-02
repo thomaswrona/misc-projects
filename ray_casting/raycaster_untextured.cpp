@@ -148,7 +148,7 @@ int main(int argc, char *argv[]){
                 int height = ceil(BASE_HEIGHT / abs(perp_dist));
                 // draw the wall slice
                 SDL_Rect rectangle{curr_x, (int) fmax(HEIGHT/2 - height/2,  0.0), 1, height};
-                SDL_FillRect(surface, &rectangle, side == 0 ? Colors[map[map_y][map_x] - 1] : Colors[map[map_y][map_x] - 1] / 2);
+                SDL_FillRect(surface, &rectangle, side == 0 ? Colors[map[map_y][map_x] - 1] : Colors[map[map_y][map_x] - 1] / 15 * 7);
             }
         }
 
