@@ -98,7 +98,7 @@ int main(int argc, char *argv[]){
             SDL_FillRect(surface, &rectangle, 0x000000);
 
             // Calculate ray direction
-            double delta_ray = (2.0 * curr_x / (WIDTH - 1) - 1) * FOV_R / 2;
+            double delta_ray = (2.0 * curr_x / (WIDTH - 1) - 1) * tan(FOV_R / 2);
             double ray_th = fmod(look_th + delta_ray + 2*M_PI, 2*M_PI);
 
             // Location of current point in map coordinates
@@ -106,11 +106,11 @@ int main(int argc, char *argv[]){
             int map_y = floor(loc_y);
 
             // Decompose ray into components
-            double ray_x = cos(ray_th);
-            double ray_y = sin(ray_th);
+            double ray_x = cos(look_th) - sin(look_th) * delta_ray;
+            double ray_y = sin(look_th) + cos(look_th) * delta_ray;
 
             // Which direction map coordinates change
-            int step_x = (ray_th > M_PI/2 && ray_th < 3*M_PI/2) ? -1 : 1;
+            int step_x = (ray_x < 0) ? -1 : 1;
             int step_y = (ray_y < 0) ? -1 : 1;
 
             // Calculate distances for ray stepping
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]){
             double dist_y = (ray_y != 0.0) ? std::abs(1.0 / ray_y) : DBL_MAX - 1;
 
             // This is a running distance the ray is moving, based on whether the discrete step is in x or y direction
-            double side_x = (ray_th > M_PI/2 && ray_th < 3*M_PI/2) ? (loc_x - map_x) * dist_x : (map_x + 1 - loc_x) * dist_x;
+            double side_x = (ray_x < 0) ? (loc_x - map_x) * dist_x : (map_x + 1 - loc_x) * dist_x;
             double side_y = (ray_y < 0) ? (loc_y - map_y) * dist_y : (map_y + 1 - loc_y) * dist_y;
 
             int side = 0;
@@ -140,12 +140,10 @@ int main(int argc, char *argv[]){
             
             // get correct distance
             double distance = (side == 0) ? side_x - dist_x : side_y - dist_y;
-            // perpendicular distance to the wall based on angle from center ray
-            double perp_dist = distance * cos(delta_ray);
 
             if(is_wall(map_x, map_y)){
                 // height from distance
-                int height = ceil(BASE_HEIGHT / abs(perp_dist));
+                int height = ceil(BASE_HEIGHT / abs(distance));
                 // draw the wall slice
                 SDL_Rect rectangle{curr_x, (int) fmax(HEIGHT/2 - height/2,  0.0), 1, height};
                 SDL_FillRect(surface, &rectangle, side == 0 ? Colors[map[map_y][map_x] - 1] : Colors[map[map_y][map_x] - 1] / 15 * 7);
